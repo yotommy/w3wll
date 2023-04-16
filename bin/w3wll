@@ -1,0 +1,53 @@
+#!/usr/bin/env python3
+
+import config
+from optional import Optional
+import os.path
+import re
+import sys
+from typing import List
+import what3words
+
+def w3w_str(words: List[str]) -> Optional:
+    """Returns words in std what3words format:
+       "word1.word2.word3"
+
+    Provided list of words can be in any of these formats:
+       ["///word1.word2.word3"]
+       ["word1.word2.word3"]
+       ["word1", "word2", "word3"]
+
+    If none of these formats are matched, returns an empty value.
+    """
+
+    if len(words) == 1:
+        if re.fullmatch('(///)?[a-z]+\.[a-z]+\.[a-z]+', words[0]):
+            return Optional.of(words)
+    elif len(words) == 3:
+        if all([re.fullmatch('[a-z]+', w) for w in words]):
+            return Optional.of('.'.join(words))
+
+    return Optional.empty()
+
+
+script_name = os.path.basename(sys.argv.pop(0))
+
+w3w = w3w_str(sys.argv)
+if not w3w.is_present():
+    print(f'Usage: {script_name} w1.w2.w3')
+    print(f'       {script_name} ///w1.w2.w3')
+    print(f'       {script_name} w1 w2 w3')
+    sys.exit(1)
+
+geocoder = what3words.Geocoder(config.api_key)
+
+try:
+    res = geocoder.convert_to_coordinates(w3w.get())
+    coordinates = res['coordinates']
+    lat = coordinates['lat']
+    lng = coordinates['lng']
+except:
+    print(res['error']['message'])
+    sys.exit(1)
+
+print(f'{lat},{lng}')
