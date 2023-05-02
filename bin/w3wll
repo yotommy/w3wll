@@ -3,6 +3,7 @@
 import config
 from optional import Optional
 import os.path
+import pyperclip
 import re
 import sys
 from typing import List
@@ -50,4 +51,6 @@ except:
     print(res['error']['message'])
     sys.exit(1)
 
-print(f'{lat},{lng}')
+latlng = f'{lat},{lng}'
+print(latlng)
+pyperclip.copy(latlng)
