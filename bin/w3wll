@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import argparse
 import config
 from optional import Optional
 import os.path
@@ -31,13 +32,18 @@ def w3w_str(words: List[str]) -> Optional:
     return Optional.empty()
 
 
-script_name = os.path.basename(sys.argv.pop(0))
+parser = argparse.ArgumentParser(
+        description='Converts what3words address to latitute/longitude.')
+parser.add_argument(
+        'what3words',
+        nargs='*',
+        help='what3words address, formatted as w1.w2.w3, ///w1.w2.w3, or w1 w2 w3')
+parser.add_argument('-c', '--clip', action='store_true', help='Copy computed lat/lng to system clipboard.')
+args = parser.parse_args()
 
-w3w = w3w_str(sys.argv)
+w3w = w3w_str(args.what3words)
 if not w3w.is_present():
-    print(f'Usage: {script_name} w1.w2.w3')
-    print(f'       {script_name} ///w1.w2.w3')
-    print(f'       {script_name} w1 w2 w3')
+    parser.print_help()
     sys.exit(1)
 
 geocoder = what3words.Geocoder(config.api_key)
@@ -53,4 +59,5 @@ except:
 
 latlng = f'{lat},{lng}'
 print(latlng)
-pyperclip.copy(latlng)
+if args.clip:
+  pyperclip.copy(latlng)
