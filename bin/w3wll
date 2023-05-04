@@ -33,17 +33,17 @@ def w3w_str(words: List[str]) -> Optional:
 
 
 parser = argparse.ArgumentParser(
-    description='Converts what3words address to latitute/longitude.'
+    description='Converts a what3words address to latitute/longitude.'
 )
 parser.add_argument(
     'what3words',
     nargs='*',
-    help='what3words address, formatted as w1.w2.w3, ///w1.w2.w3, or w1 w2 w3'
+    help='what3words address, formatted as "w1.w2.w3", "///w1.w2.w3", or "w1" "w2" "w3"'
 )
 parser.add_argument(
     '-c', '--clip',
     action='store_true',
-    help='Copy computed lat/lng to system clipboard.'
+    help='copy computed lat/lng to system clipboard.'
 )
 args = parser.parse_args()
 
