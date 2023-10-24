@@ -4,11 +4,21 @@ import argparse
 import config
 from optional import Optional
 import os.path
-import pyperclip
 import re
 import sys
 from typing import List
-import what3words
+import urllib
+
+try:
+    # Attempt to import the package
+    import what3words
+
+except ImportError:
+    # If import fails, the package is missing
+    print("The 'what3words' package is missing!")
+    print("\nTo install it, run the following command:")
+    print("\n    pip install what3words")
+    sys.exit(1)
 
 
 def w3w_str(words: List[str]) -> Optional:
@@ -42,10 +52,10 @@ parser.add_argument(
     help='what3words address, formatted as "w1.w2.w3", "///w1.w2.w3", or "w1" "w2" "w3"',
 )
 parser.add_argument(
-    "-c",
-    "--clip",
+    "-g",
+    "--goog",
     action="store_true",
-    help="copy computed lat/lng to system clipboard.",
+    help="output Google Maps URL",
 )
 args = parser.parse_args()
 
@@ -66,6 +76,11 @@ except:
     sys.exit(1)
 
 latlng = f"{lat},{lng}"
-print(latlng)
-if args.clip:
-    pyperclip.copy(latlng)
+
+if args.goog:
+    url = (
+        f"https://www.google.com/maps/search/?api=1&query={urllib.parse.quote(latlng)}"
+    )
+    print(url)
+else:
+    print(latlng)
